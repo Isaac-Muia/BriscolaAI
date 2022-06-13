@@ -1,7 +1,7 @@
 class Player:
     '''An abstract super class for a player in Briscola'''
 
-    '''Suites cards in a deck for briscola and points for each card'''
+    '''Suites and cards in a deck for briscola and points for each card'''
     suites = ["Suns", "Swords", "Clubs", "Cups"]
     cards = ['2','4','5','6','7',"Jack","Knight","King",'3','1']
     points = [0,0,0,0,0,2,3,4,10,11]
@@ -10,9 +10,6 @@ class Player:
     def __init__(self, name):
         '''
         Initialises the agent, and gives it a name
-        You can add configuration parameters etc here,
-        but the default code will always assume a 1-parameter constructor, which is the agent's name.
-        The agent will persist between games to allow for long-term learning etc.
         '''
         self.name = name
 
@@ -24,7 +21,7 @@ class Player:
 
     def __repr__(self):
         '''
-        returns a representation fthe state of the agent.
+        returns a representation of the state of the agent.
         default implementation is just the name, but this may be overridden for debugging
         '''
         return self.__str__()

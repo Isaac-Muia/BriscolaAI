@@ -2,7 +2,7 @@ from player import Player
 import random
 
 class randomAgent(Player):        
-    '''A sample implementation of a random agent in the game Briscola'''
+    '''A simple implementation of a random agent in the game Briscola'''
 
     def __init__(self, name='Rando'):
         '''

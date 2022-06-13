@@ -1,5 +1,5 @@
-'pycache'
-'vscode'
+'_pycache_'
+'.vscode'
 'Tests'
 'tests.txt'
 'test_unittest.py'

@@ -163,7 +163,7 @@ class ModelAgent(Player):
         if card != self.lastCard:
             self.PotentialCards.remove(card)
             
-            #Other player picked up the last card
+            #Other player picked up the last card so re-add it to potential cards (or i guess known cards at this point given the deck is empty)
             if len(self.PotentialCards) == 2:
                 self.PotentialCards.append(self.lastCard)
 
@@ -241,7 +241,4 @@ class ModelAgent(Player):
                 if card1Index == len(self.PotentialCards) - 3:
                     break
                 card1Index += 1
-    #    if len(potentialHands)<100:
-    #        print(potentialHands)
-    #        print(self.PotentialCards)
         return(potentialHands)
