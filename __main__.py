@@ -5,6 +5,7 @@ from probability_player import ProbAgent
 from simple_player_memory import ModelAgent
 
 from game import Game
+import sys
 AgentWins = 0
 AgentLosses = 0
 AgentTies = 0
