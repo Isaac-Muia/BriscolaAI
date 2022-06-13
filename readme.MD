@@ -1,1 +1,1 @@
-python3 __main__.py to run
+python3 __main__.py "number_of_games" to run

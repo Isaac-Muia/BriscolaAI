@@ -1,5 +1,5 @@
-from simple_player import SimpleAgent  # The code to test
-from probability_player import ProbAgent
+from AI.simple_player import SimpleAgent  # The code to test
+from AI.probability_player import ProbAgent
 
 import unittest   # The test framework
 

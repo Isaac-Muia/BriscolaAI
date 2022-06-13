@@ -1,18 +1,23 @@
-from simple_player import SimpleAgent
-from human_player import Human
-from random_player import randomAgent
-from probability_player import ProbAgent
-from simple_player_memory import ModelAgent
-
 from game import Game
 import sys
+from human_player import Human
+
+from AI.simple_player import SimpleAgent
+from  AI.random_player import randomAgent
+from  AI.probability_player import ProbAgent
+from  AI.simple_player_memory import ModelAgent
+
+if len(sys.argv) != 2:
+    print("Error: Usage is __main__.py 'number of games' ")
+    exit(1)
+
 AgentWins = 0
 AgentLosses = 0
 AgentTies = 0
 i = 0
-player_name = input("What is you name: ")
-while i < 1:
-    players = [ModelAgent(name = "Model"),Human(name = player_name)]
+#player_name = input("What is you name: ")
+while i < int(sys.argv[1]):
+    players = [ModelAgent(name = "Model"), SimpleAgent(name = "Simple")]
     briscola = ""
     deck = []
     print("Hi")
