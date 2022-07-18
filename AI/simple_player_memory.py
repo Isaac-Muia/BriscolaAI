@@ -1,24 +1,27 @@
+from sqlalchemy import false
 from player import Player
 
 class ModelAgent(Player):        
-    '''An implementation of a model-based reflex agent in the game Briscola'''
+    '''An implementation of a model-based reflex agent for the game Briscola.
+        Chance variable determines at what likelihood of a card being taken
+        the agent will play that card if it goes first (brisChance for briscola cards)'''
 
-    def __init__(self, name='Rando'):
+    def __init__(self, name, brisChance, chance):
         '''
         Initialises the agent.
         '''
         self.hand = []
         self.name = name
         self.wonCards = []
+        self.brisChance = brisChance #Play briscola card if it have a below 'brisChance' chance of losing
+        self.chance = chance #Play non-briscola card if it have a below 'chance' chance of losing
 
         #List of cards still to play
         self.PotentialCards = []
-        i = 0
         for suite in Player.suites:
             for card in Player.cards:
                 self.PotentialCards.append((str(card), suite))
                 
-                i += 1
 
     def new_game(self, briscola,lastCard):
         '''
@@ -93,7 +96,7 @@ class ModelAgent(Player):
                         if cardToPLay == None or (Player.cards.index(card[0]) < Player.cards.index(cardToPLay[0]) and card[1] != briscola):
                             cardToPLay = card
 
-        #Pick highest value card with chance being beaten < 50%
+        #Pick highest value card with chance being beaten < chance
         else:
             card_list = [] #(card,chance of being beaten)
             if len(self.hand) == 3:
@@ -122,23 +125,28 @@ class ModelAgent(Player):
                 else:
                     hand_list[len(hand_list) - 1] = c
 
+            #Gets chances of each card being beaten
             for card1 in hand_list:
                 beaten = 0
-                for cards in potentialHands:
-                    for card in cards:
-                        if self.winner(card, card1, briscola):
+                for hand in potentialHands:
+                    for card in hand:
+                        if self.winner(card1, card, briscola) == False:
                             beaten += 1
                             break
       
                 beaten = beaten / len(potentialHands)
- #               print(beaten)
                 card_list.append((card1,beaten))
 
-            #Get first card with less than 0.5 chance to be between, pick the last card if if the first two are over 0.5
+            #Get first card with less than chance or bricola less than brischance chance to be between, pick the last card if if the first two are over 0.5
             for cardb in card_list:
                 if cardb == card_list[len(card_list) - 1]:
                     cardToPLay = cardb[0]
-                elif cardb[1] < 0.5:
+
+                elif cardb[1] < self.brisChance:
+                    cardToPLay = cardb[0]
+                    break
+
+                elif cardb[0][1] != briscola and cardb[1] < self.chance:
                     cardToPLay = cardb[0]
                     break
 

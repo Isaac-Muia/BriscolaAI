@@ -1,5 +1,6 @@
 from AI.simple_player import SimpleAgent  # The code to test
 from AI.probability_player import ProbAgent
+from AI.simple_player_memory import ModelAgent
 
 import unittest   # The test framework
 
@@ -30,11 +31,21 @@ class Test_agents(unittest.TestCase):
         testAgent.PotentialCards = [1,2,3,4,5,6]
         self.assertEqual(testAgent.createHands(),[(1, 2, 3), (1, 2, 4), (1, 2, 5), (1, 2, 6), (1, 3, 4), (1, 3, 5), (1, 3, 6), (1, 4, 5), (1, 4, 6), (1, 5, 6), (2, 3, 4), (2, 3, 5), (2, 3, 6), (2, 4, 5), (2, 4, 6), (2, 5, 6), (3, 4, 5), (3, 4, 6), (3, 5, 6), (4, 5, 6)])
     
+
     def test_ProbAgentDeck(self):
         testAgent = ProbAgent(name = "Prob")
         testAgent.deal_hand([('4', 'Cups'),('2', 'Swords'),('1', 'Cups')])
         self.assertEqual(len(testAgent.createHands()),7770)
 
+    def test_ModelAgent(self):
+        testAgent = ModelAgent(name = "Model", brisChance=0.2,chance=0.5)
+        testAgent.PotentialCards = [1,2,3,4,5,6]
+        self.assertEqual(testAgent.createHands(),[(1, 2, 3), (1, 2, 4), (1, 2, 5), (1, 2, 6), (1, 3, 4), (1, 3, 5), (1, 3, 6), (1, 4, 5), (1, 4, 6), (1, 5, 6), (2, 3, 4), (2, 3, 5), (2, 3, 6), (2, 4, 5), (2, 4, 6), (2, 5, 6), (3, 4, 5), (3, 4, 6), (3, 5, 6), (4, 5, 6)])
+
+    def test_ProbAgentDeck(self):
+        testAgent = ModelAgent(name = "Model", brisChance=0.2,chance=0.5)
+        testAgent.deal_hand([('4', 'Cups'),('2', 'Swords'),('1', 'Cups')])
+        self.assertEqual(len(testAgent.createHands()),7770)
 
 
 if __name__ == '__main__':

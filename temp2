@@ -1,0 +1,87 @@
+#learning.py used for model agent learning against a simple agent it plays a game then if it looses chance variable are adjusted slightly
+
+from sqlalchemy import true
+from game import Game
+import sys
+from human_player import Human
+
+from AI.simple_player import SimpleAgent
+from  AI.random_player import randomAgent
+from  AI.probability_player import ProbAgent
+from  AI.simple_player_memory import ModelAgent
+
+import sys, os
+
+
+if len(sys.argv) != 2:
+    print("Error: Usage is __main__.py 'number of games' ")
+    exit(1)
+sys.stdout = open(os.devnull, 'w')
+i = 0
+#player_name = input("What is you name: ")
+
+prevBris = False #If true change brisChance variable on next loss if false chance 
+BrisLower = True #If true lower brisChance variable on next adjustment raise if false
+ChanceLower = True #If true lower chance variable on next adjustment raise if false
+
+newBrisChance = 0.2
+newChance = 0.5
+prevAgentLosses = 101
+prevAgentTies = 0
+prevAgentWins = 0
+
+prevLose = False
+
+while i < int(sys.argv[1]):
+    a = 0
+    
+    while a < 100:
+        players = [ModelAgent(brisChance = newBrisChance , chance = newChance, name = "Model"), SimpleAgent(name = "Simple")]
+        AgentWins = 0
+        AgentLosses = 0
+        AgentTies = 0
+        briscola = ""
+        deck = []
+        game = Game(briscola, deck, players)
+        winner = game.play(briscola, deck, players)
+        if winner == "Model":
+            AgentWins += 1
+        if winner == "Simple":
+            AgentLosses += 1
+        if winner == "tie":
+            AgentTies += 1
+        a += 1
+
+    #Adjust agents chances
+    if prevAgentWins < AgentWins and prevAgentLosses > AgentLosses:
+        winner = AgentWins
+        prevLose = False
+
+    if prevAgentWins > AgentWins and prevAgentLosses < AgentLosses:
+        if prevBris:
+            if BrisLower:
+                newBrisChance = newBrisChance +0.01
+                if prevLose == False:
+                    BrisLower = False
+            else:
+                newBrisChance = newBrisChance -0.01
+                if prevLose == False:
+                    BrisLower = True
+        else:
+            if ChanceLower:
+                newChance = newChance -0.01
+                if prevLose == False:
+                    ChanceLower = False
+            else:
+                newChance = newChance +0.01
+                if prevLose == False:
+                    ChanceLower = True
+        prevLose = True
+    i += 1
+
+    prevAgentWins = AgentWins
+    prevAgentLosses = AgentLosses
+    
+sys.stdout = sys.__stdout__
+print("Chance: " + str(round(newChance,2)))
+print("BrisChance: " + str(round(newBrisChance,2)))

@@ -4,7 +4,7 @@ import random
 class randomAgent(Player):        
     '''A simple implementation of a random agent in the game Briscola'''
 
-    def __init__(self, name='Rando'):
+    def __init__(self, name, brisChance = 1, chance = 1):
         '''
         Initialises the agent.
         '''
@@ -41,14 +41,12 @@ class randomAgent(Player):
         draw cards and inform agent of their hand
         '''
         self.hand = hand
-        print("Current hand: " + str(hand))
 
     def draw_card(self, card):
         '''
         Draws card and updates agents hand
         '''
         self.hand.append(card)
-        print("Current hand: " + str(self.hand))
 
     def round_outcome(self, card1, card2, win):
         '''

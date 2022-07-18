@@ -3,7 +3,7 @@ from player import Player
 class ProbAgent(Player):        
     '''An implementation of a basic AI agent in the game Briscola'''
 
-    def __init__(self, name='Rando'):
+    def __init__(self, name, brisChance = 1, chance = 1,):
         '''
         Initialises the agent.
         '''

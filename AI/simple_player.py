@@ -3,7 +3,7 @@ from player import Player
 class SimpleAgent(Player):        
     '''An implementation of a simple refelx agent in the game Briscola'''
 
-    def __init__(self, name='Rando'):
+    def __init__(self, name, brisChance = 1, chance = 1):
         '''
         Initialises the agent.
         '''
@@ -93,10 +93,6 @@ class SimpleAgent(Player):
                 for card in self.hand:
                     if cardToPLay == None or (Player.cards.index(card[0]) < Player.cards.index(cardToPLay[0]) and card[1] != briscola) or (cardToPLay[1] == briscola and card[1] != briscola):
                          cardToPLay = card
- #       print("Hand:")
- #       print(self.hand)   
- #       print("cardToPLay:")
-  #      print(cardToPLay)
         self.hand.remove(cardToPLay)
         
         return(cardToPLay)

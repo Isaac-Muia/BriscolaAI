@@ -7,11 +7,13 @@ class Player:
     points = [0,0,0,0,0,2,3,4,10,11]
             
 
-    def __init__(self, name):
+    def __init__(self, name,brisChance, chance):
         '''
-        Initialises the agent, and gives it a name
+        Initialises the agent, and gives it a name brisChance and chance are used by model agent for learning
         '''
         self.name = name
+        self.brisChance = brisChance
+        self.chance = chance
 
     def __str__(self):
         '''

@@ -4,7 +4,7 @@ import random
 class Human(Player):        
     '''An implementation of a human player in the game Briscola'''
 
-    def __init__(self, name='Rando'):
+    def __init__(self, brisChance, chance, name):
         '''
         Initialises the agent.
         '''
