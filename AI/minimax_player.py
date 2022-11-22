@@ -2,7 +2,7 @@ from player import Player
 import random
 
 class randomAgent(Player):        
-    '''An implementation of a random agent in the game Briscola'''
+    '''An implementation of a minimax agent in the game Briscola'''
 
     def __init__(self, name, brisChance = 1, chance = 1):
         '''
@@ -11,6 +11,13 @@ class randomAgent(Player):
         self.hand = []
         self.name = name
         self.wonCards = []
+       # self.tree = [] #MINIMAX tree (Agent_card,Oponent_card,first)
+
+        #List of cards still to play
+        self.PotentialCards = []
+        for suite in Player.suites:
+            for card in Player.cards:
+                self.PotentialCards.append((str(card), suite))
 
     def new_game(self, briscola,lastCard):
         '''
@@ -18,6 +25,8 @@ class randomAgent(Player):
         briscola
         '''
         self.briscola = briscola
+        self.lastCard = lastCard
+        self.PotentialCards.remove(lastCard)
 
     def choose_card(self, briscola, first, first_card):
         '''
@@ -41,11 +50,22 @@ class randomAgent(Player):
         draw cards and inform agent of their hand
         '''
         self.hand = hand
+        self.PotentialCards.remove(hand[0])
+        self.PotentialCards.remove(hand[1])
+        self.PotentialCards.remove(hand[2])
 
     def draw_card(self, card):
         '''
         Draws card and updates agents hand
         '''
+
+        if card != self.lastCard:
+            self.PotentialCards.remove(card)
+            
+            #Other player picked up the last card so re-add it to potential cards (or i guess known cards at this point given the deck is empty)
+            if len(self.PotentialCards) == 2:
+                self.PotentialCards.append(self.lastCard)
+
         self.hand.append(card)
 
     def round_outcome(self, card1, card2, win):
@@ -71,3 +91,15 @@ class randomAgent(Player):
             elif card[0] == "King":
                  points += 4
         return(points)
+    
+    def create_tree(self,first,card):
+        '''Creates minimax tree using potential remaing cards and card played'''
+        #Maximising points won
+        #
+        pcards = self.PotentialCards
+        cardsInHand = self.cards
+        tree = [] #MINIMAX tree (points,agent_card_played,oponent_card_played)
+        if first:
+            for card2 in pcards:
+
+        

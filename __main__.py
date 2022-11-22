@@ -7,6 +7,7 @@ from AI.simple_player import SimpleAgent
 from  AI.random_player import randomAgent
 from  AI.probability_player import ProbAgent
 from  AI.simple_player_memory import ModelAgent
+from human_player import Human
 
 if len(sys.argv) < 2:
     print("Error: Usage is __main__.py 'number of games' ")
@@ -21,7 +22,7 @@ AgentTies = 0
 i = 0
 #player_name = input("What is you name: ")
 while i < int(sys.argv[1]):
-    players = [ModelAgent(brisChance = 0.86 , chance = 0.86, name = "Model"), ModelAgent(brisChance = 0.92 , chance = 0.4, name = "Simple")]
+    players = [ModelAgent(brisChance = 0.1 , chance = 0.35, name = "Model"), SimpleAgent(name = "Simple")]
     briscola = ""
     deck = []
     print("Hi")
