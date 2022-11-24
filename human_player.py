@@ -33,6 +33,8 @@ class Human(Player):
                 notDone = False
             elif len(self.hand) == 2 and (value == '1' or   value == '2'):
                 notDone = False
+            elif(value == "exit"):
+                exit(0)
         card = self.hand[int(value) - 1]
         self.hand.remove(card)
         print(card)
