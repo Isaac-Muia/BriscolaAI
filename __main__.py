@@ -16,45 +16,46 @@ if len(sys.argv) == 3:
 
 
 def startGame():
-    AgentWins = 0
-    AgentLosses = 0
-    AgentTies = 0
-    i = 0
     humanName = str(ent1.get())
-    while i < int(sys.argv[1]):
-        #Change agent based on what difficulty was selected
-        if(var.get() == 3):
-            opponent = ModelAgent(brisChance = 0.1 , chance = 0.35, name = "Model")
-        elif(var.get() == 2):
-            opponent = SimpleAgent(brisChance = 0.1 , chance = 0.35, name = "Model")
-        else:
-            opponent = randomAgent(brisChance = 0.1 , chance = 0.35, name = "Model")
-        
-        #Clear GUI
-        rad1.destroy()
-        rad2.destroy()
-        rad3.destroy()
-        text.destroy()
-        ent1.destroy()
-        btn.destroy()  
+    difficuty = var.get()
+    if humanName != '' and difficuty != 0:
+        AgentWins = 0
+        AgentLosses = 0
+        AgentTies = 0
+        i = 0
+        while i < 1:
+            #Change agent based on what difficulty was selected
+            if(difficuty == 3):
+                opponent = ModelAgent(brisChance = 0.1 , chance = 0.35, name = "Model")
+            elif(difficuty == 2):
+                opponent = SimpleAgent(brisChance = 0.1 , chance = 0.35, name = "Model")
+            else:
+                opponent = randomAgent(brisChance = 0.1 , chance = 0.35, name = "Model")
+            
+            #Clear GUI
+            rad1.destroy()
+            rad2.destroy()
+            rad3.destroy()
+            text.destroy()
+            ent1.destroy()
+            btn.destroy()  
 
-        players = [opponent, Human(name = humanName, brisChance = 0.1 , chance = 0.35)]
-        briscola = ""
-        deck = []
-        print("Hi")
-        game = Game(briscola, deck, players,gameWindow,humanName)
-        winner = game.play(briscola, deck, players)
-        i += 1
-        if winner == "Model":
-            AgentWins += 1
-        if winner == humanName:
-            AgentLosses += 1
-        if winner == "tie":
-            AgentTies += 1
-    sys.stdout = sys.__stdout__
-    print("AI wins: " + str(AgentWins))
-    print("AI losses: " + str(AgentLosses))
-    print("Ties: " + str(AgentTies))
+            players = [opponent, Human(name = humanName, brisChance = 0.1 , chance = 0.35)]
+            briscola = ""
+            deck = []
+            game = Game(briscola, deck, players,gameWindow,humanName)
+            winner = game.play(briscola, deck, players)
+            i += 1
+            if winner == "Model":
+                AgentWins += 1
+            if winner == humanName:
+                AgentLosses += 1
+            if winner == "tie":
+                AgentTies += 1
+        sys.stdout = sys.__stdout__
+        print("AI wins: " + str(AgentWins))
+        print("AI losses: " + str(AgentLosses))
+        print("Ties: " + str(AgentTies))
 
 #Create game window
 gameWindow=Tk(screenName="Briscola",className="Briscola")

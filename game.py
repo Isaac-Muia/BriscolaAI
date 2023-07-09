@@ -2,6 +2,9 @@ from player import Player
 import random
 from tkinter import * 
 from tkinter.ttk import * 
+import concurrent. futures
+import time
+import threading
 #from GUI import _GUI
 
 class Game:
@@ -14,6 +17,7 @@ class Game:
         '''Randomly chooses briscola, player order and shuffles deck 
         Returns name of winner'''   
         self.gw = gameWindow #Inherit game window from main program
+        self.cardsOnBoard = [] #List of cards on game board
         i = 0
         for suite in Player.suites:
             for card in Player.cards:
@@ -29,8 +33,10 @@ class Game:
         
         #Determine which player is the human
         self.humanPlayer = 0
+        self.AIPlayer = 1
         if(players[1].name == humanName):
             self.humanPlayer = 1
+            self.AIPlayer = 0
 
     def play(self, briscola, deck, players):
         '''Deals cards and plays a game of briscula'''
@@ -59,32 +65,52 @@ class Game:
         cont = True  
         Round = 1  
         prevWinner = players[0].name
-
-        #Plays game until players are out of cards
+    #    with concurrent. futures.ThreadPool Executor( max_ workers=2) as executor:
+            # Submit tasks to the thread pool
+     #       futures = [executor. submit( blocking_ function, i) for i in range(5)]
+            # Wait for tasks to complete and retrieve results
+      #      results = [f. result() for f in futures]
+            #Plays game until players are out of cards
         while cont:
-            
             self.canvas.delete('all')
             for element in self.elements:
                 element.destroy()
+            self.cardsOnBoard = []
 
             self.elements = []
 
             #Create the last card
             Game.create_card(self,self.canvas,1400,400,deck[39])
-
+            #Create the opponents  cards omn the board
+            a = 0
+            while a < len(players[self.AIPlayer].hand):
+                Game.create_card(self,self.canvas,650 + a*150,100,None)
+                a += 1
             #Create the players cards on board
             h = 0
             while h < len(players[self.humanPlayer].hand):
-                Game.create_card(self,self.canvas,650 + h*150,600,players[self.humanPlayer].hand[h])
+                print(players[self.humanPlayer].hand[h])
+                Game.create_card(self,self.canvas,650 + h*150,675,players[self.humanPlayer].hand[h])
                 h += 1
             print(Round)
             print(prevWinner + " plays first")
             print()
             if prevWinner == players[0].name:
+                num = len(players[0].hand) #card that the oponent plays from the board
                 card1 = players[0].choose_card(self.briscola,True,None)
+                if players[0].name == "Model":
+                    self.canvas.delete(self.cardsOnBoard[num])
+                    Game.create_card(self,self.canvas,800,275,card1)
+                else:
+                    Game.create_card(self,self.canvas,800,375,card1)
                 print(players[0].name + " plays:")
                 print(card1)
                 card2 = players[1].choose_card(self.briscola,False,card1)
+                if players[0].name == "Model":
+                    self.canvas.delete(self.cardsOnBoard[num])
+                    Game.create_card(self,self.canvas,800,275,card2)
+                else:
+                    Game.create_card(self,self.canvas,800,375,card2)
                 print(players[1].name + " plays:")
                 print(card2)
 
@@ -100,10 +126,21 @@ class Game:
                     print(players[1].name + " won")
                     prevWinner = players[1].name
             else:
+                num = len(players[1].hand) #card that the oponent plays from the board
                 card1 = players[1].choose_card(self.briscola,True,None)
+                if players[1].name == "Model":
+                    self.canvas.delete(self.cardsOnBoard[num])
+                    Game.create_card(self,self.canvas,800,275,card1)
+                else:
+                    Game.create_card(self,self.canvas,800,375,card1)
                 print(players[1].name + " plays:")
                 print(card1)
                 card2 = players[0].choose_card(self.briscola,False,card1)
+                if players[1].name == "Model":
+                    self.canvas.delete(self.cardsOnBoard[num])
+                    Game.create_card(self,self.canvas,800,275,card2)
+                else:
+                    Game.create_card(self,self.canvas,800,375,card2)
                 print(players[0].name + " plays:")
                 print(card2)
 
@@ -118,7 +155,6 @@ class Game:
                     players[1].round_outcome( card2,card1, False)
                     print(players[0].name + " won")
                     prevWinner = players[0].name
-
             if deckID < 40:
                 if prevWinner == players[0].name:
                     players[0].draw_card(deck[deckID])
@@ -163,7 +199,7 @@ class Game:
 
         if p1 + p2 != 120:
             print("ERROR! Points don't equal 120")
-            quit()
+            quit(1)
         if p1 > p2:
             print( players[0].name + " won by " + str(p1 - p2) + " points!")
             return(players[0].name)
@@ -175,14 +211,15 @@ class Game:
             return("tie")
 
     def create_card(self,canvas,x,y,card):
-        '''Puts a card on the board at the given coodinates'''
+        '''Puts a card on the board at the given coodinates
+            if card is None the cards face will not be shown'''
         vertical_size = 170
         horizontal_size = 130
-        canvas.create_rectangle(x-horizontal_size/2, y+vertical_size/2, x+horizontal_size/2, y-vertical_size/2,
+        self.cardsOnBoard.append(canvas.create_rectangle(x-horizontal_size/2, y+vertical_size/2, x+horizontal_size/2, y-vertical_size/2,
                                     outline = "black", fill = "white",
-                                    width = 2)
-        face = Label(self.gw,
-                  text = card[0] + " of " + card[1], font = ('Arial', 13))
-        self.elements.append(face)
-        face.place(x = x-50, y = y-5)
+                                    width = 2))
+        if card != None:
+            face = Label(self.gw,text = card[0] + " of " + card[1], font = ('Arial', 13))
+            self.elements.append(face)
+            face.place(x = x-50, y = y-5)
         canvas.pack(fill = BOTH, expand = 1)
