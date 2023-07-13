@@ -1,5 +1,4 @@
 from player import Player
-import random
 
 class Human(Player):        
     '''An implementation of a human player in the game Briscola'''
@@ -21,24 +20,14 @@ class Human(Player):
 
     def choose_card(self, briscola, first, first_card):
         '''
-        allows the player to pick the card they wish to play
+        plays the card that the user chose and removes it from the deck(The selected will be the briscola variable and will be in integer form)
         '''
         print("Current hand: " + str(self.hand))
-        if len(self.hand) == 1:
-                return( self.hand[0])
-        notDone = True
-        while notDone:
-            value = input("What card would you like to play? 1/2/3: ")
-            if len(self.hand) == 3 and (value == '1' or   value == '2' or  value == '3'):
-                notDone = False
-            elif len(self.hand) == 2 and (value == '1' or   value == '2'):
-                notDone = False
-            elif(value == "exit"):
-                exit(0)
-        card = self.hand[int(value) - 1]
+        card = self.hand[briscola - 1]
         self.hand.remove(card)
         print(card)
         return(card)
+
 
     def deal_hand(self, hand):
         ''' 

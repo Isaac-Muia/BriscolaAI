@@ -2,22 +2,34 @@ from player import Player
 import random
 from tkinter import * 
 from tkinter.ttk import * 
-import concurrent. futures
-import time
-import threading
 #from GUI import _GUI
 
+
+def handle_click(event):
+    global click_var
+    if 760 > event.y > 590:
+        if 715 > event.x > 585:
+            click_var.set(1)
+            print(click_var)
+        elif 865 > event.x > 735:
+            click_var.set(2)
+            print(click_var)
+        elif 1015 > event.x > 885:
+            click_var.set(3)
+            print(click_var)
+
 class Game:
-    
     '''
     A class for maintaining the state of a game of Briscola
     '''
 
     def __init__(self, briscola, deck, players,gameWindow,humanName):
+        
         '''Randomly chooses briscola, player order and shuffles deck 
         Returns name of winner'''   
         self.gw = gameWindow #Inherit game window from main program
         self.cardsOnBoard = [] #List of cards on game board
+        self.gw.bind("<Button-1>", handle_click)
         i = 0
         for suite in Player.suites:
             for card in Player.cards:
@@ -37,6 +49,8 @@ class Game:
         if(players[1].name == humanName):
             self.humanPlayer = 1
             self.AIPlayer = 0
+
+
 
     def play(self, briscola, deck, players):
         '''Deals cards and plays a game of briscula'''
@@ -63,14 +77,8 @@ class Game:
 
 
         cont = True  
-        Round = 1  
+        round = 1  
         prevWinner = players[0].name
-    #    with concurrent. futures.ThreadPool Executor( max_ workers=2) as executor:
-            # Submit tasks to the thread pool
-     #       futures = [executor. submit( blocking_ function, i) for i in range(5)]
-            # Wait for tasks to complete and retrieve results
-      #      results = [f. result() for f in futures]
-            #Plays game until players are out of cards
         while cont:
             self.canvas.delete('all')
             for element in self.elements:
@@ -79,8 +87,12 @@ class Game:
 
             self.elements = []
 
+            global click_var
+            click_var = IntVar()
+
             #Create the last card
-            Game.create_card(self,self.canvas,1400,400,deck[39])
+            if(round < 18):
+                Game.create_card(self,self.canvas,1400,400,deck[39])
             #Create the opponents  cards omn the board
             a = 0
             while a < len(players[self.AIPlayer].hand):
@@ -92,12 +104,24 @@ class Game:
                 print(players[self.humanPlayer].hand[h])
                 Game.create_card(self,self.canvas,650 + h*150,675,players[self.humanPlayer].hand[h])
                 h += 1
-            print(Round)
+            print(round)
             print(prevWinner + " plays first")
             print()
             if prevWinner == players[0].name:
-                num = len(players[0].hand) #card that the oponent plays from the board
-                card1 = players[0].choose_card(self.briscola,True,None)
+                hand = []
+                for c in  players[0].hand:
+                    hand.append(c) 
+                if prevWinner != "Model":
+                    while(True):
+                        self.gw.wait_variable(click_var)
+                        #Check player is clikcing a cad that is actually on teh board
+                        if(click_var.get() == 1 or (click_var.get() == 2 and len(players[self.humanPlayer].hand) > 1) or 
+                           (click_var.get() == 3 and len(players[self.humanPlayer].hand) > 2) ):
+                            break
+                    card1 = players[0].choose_card(click_var.get(),True,None)
+                else:
+                     card1 = players[0].choose_card(self.briscola,True,None)
+                num = hand.index(card1) + 1 #card that the oponent plays from the boar
                 if players[0].name == "Model":
                     self.canvas.delete(self.cardsOnBoard[num])
                     Game.create_card(self,self.canvas,800,275,card1)
@@ -105,7 +129,16 @@ class Game:
                     Game.create_card(self,self.canvas,800,375,card1)
                 print(players[0].name + " plays:")
                 print(card1)
-                card2 = players[1].choose_card(self.briscola,False,card1)
+                if prevWinner == "Model":
+                    while(True):
+                        self.gw.wait_variable(click_var)
+                        #Check player is clikcing a cad that is actually on teh board
+                        if(click_var.get() == 1 or (click_var.get() == 2 and len(players[self.humanPlayer].hand) > 1) or 
+                           (click_var.get() == 3 and len(players[self.humanPlayer].hand) > 2) ):
+                            break
+                    card2 = players[1].choose_card(click_var.get(),True,None)
+                else:
+                     card2 = players[1].choose_card(self.briscola,True,None)
                 if players[0].name == "Model":
                     self.canvas.delete(self.cardsOnBoard[num])
                     Game.create_card(self,self.canvas,800,275,card2)
@@ -126,8 +159,20 @@ class Game:
                     print(players[1].name + " won")
                     prevWinner = players[1].name
             else:
-                num = len(players[1].hand) #card that the oponent plays from the board
-                card1 = players[1].choose_card(self.briscola,True,None)
+                hand = []
+                for c in  players[1].hand:
+                    hand.append(c)
+                if players[1].name != "Model":
+                    while(True):
+                        self.gw.wait_variable(click_var)
+                        #Check player is clikcing a cad that is actually on teh board
+                        if(click_var.get() == 1 or (click_var.get() == 2 and len(players[self.humanPlayer].hand) > 1) or 
+                           (click_var.get() == 3 and len(players[self.humanPlayer].hand) > 2) ):
+                            break
+                    card1 = players[1].choose_card(click_var.get(),True,None)
+                else:
+                     card1 = players[1].choose_card(self.briscola,True,None)
+                num = hand.index(card1) + 1 #card that the oponent plays from the boar
                 if players[1].name == "Model":
                     self.canvas.delete(self.cardsOnBoard[num])
                     Game.create_card(self,self.canvas,800,275,card1)
@@ -135,7 +180,16 @@ class Game:
                     Game.create_card(self,self.canvas,800,375,card1)
                 print(players[1].name + " plays:")
                 print(card1)
-                card2 = players[0].choose_card(self.briscola,False,card1)
+                if players[1].name == "Model":
+                    while(True):
+                        self.gw.wait_variable(click_var)
+                        #Check player is clikcing a cad that is actually on teh board
+                        if(click_var.get() == 1 or (click_var.get() == 2 and len(players[self.humanPlayer].hand) > 1) or 
+                           (click_var.get() == 3 and len(players[self.humanPlayer].hand) > 2) ):
+                            break
+                    card2 = players[0].choose_card(click_var.get(),True,None)
+                else:
+                     card2 = players[0].choose_card(self.briscola,True,None)
                 if players[1].name == "Model":
                     self.canvas.delete(self.cardsOnBoard[num])
                     Game.create_card(self,self.canvas,800,275,card2)
@@ -161,16 +215,16 @@ class Game:
                     deckID += 1
                     players[1].draw_card(deck[deckID])
                     deckID += 1
-                    Round += 1
+                    round += 1
                 else:
                     players[1].draw_card(deck[deckID])
                     deckID += 1
                     players[0].draw_card(deck[deckID])
                     deckID += 1
-                    Round += 1
+                    round += 1
 
-            elif Round < 20:
-                Round += 1              
+            elif round < 20:
+                round += 1              
             else:
                 cont = False
                 return(Game.finish_game(players))
@@ -209,7 +263,7 @@ class Game:
         else:
             print("Tie!")
             return("tie")
-
+        
     def create_card(self,canvas,x,y,card):
         '''Puts a card on the board at the given coodinates
             if card is None the cards face will not be shown'''

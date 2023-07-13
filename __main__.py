@@ -77,4 +77,8 @@ rad3.pack()
 text.pack()
 ent1.pack()
 btn.pack()
+
+#Variable to hold what card the user wants to play (is reset to 0 after every round)
+click_var = IntVar()
+
 gameWindow.mainloop()   
