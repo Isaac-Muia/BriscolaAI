@@ -1,4 +1,3 @@
-import sys, os
 from tkinter import *
 
 from game import Game
@@ -10,20 +9,36 @@ from  AI.probability_player import ProbAgent
 from  AI.simple_player_memory import ModelAgent
 from human_player import Human
 
-if len(sys.argv) == 3:
-    if sys.argv[2] == "-np":
-        sys.stdout = open(os.devnull, 'w')
+class Main:
+    def __init__(self):
+        #Create game window
+        self.gameWindow=Tk(screenName="Briscola",className="Briscola")
+        self.gameWindow.geometry('1600x800')
+
+        #Input player name
+        self.text=Label(self.gameWindow, text = "Your name")
+        self.ent1 = Entry(self.gameWindow)
+
+        #Diffculty setting
+        self.var = IntVar() 
+        self.rad1 = Radiobutton(self.gameWindow, text='Easy', variable=self.var, value=1)
+        self.rad2 = Radiobutton(self.gameWindow, text='Medium', variable=self.var, value=2)
+        self.rad3 = Radiobutton(self.gameWindow, text='Hard', variable=self.var, value=3) 
+        self.btn=Button(text='OK',command=lambda: Main.startGame(self))
+        self.rad1.pack()
+        self.rad2.pack()
+        self.rad3.pack()
+        self.text.pack()
+        self.ent1.pack()
+        self.btn.pack()
+
+        self.gameWindow.mainloop()   
 
 
-def startGame():
-    humanName = str(ent1.get())
-    difficuty = var.get()
-    if humanName != '' and difficuty != 0:
-        AgentWins = 0
-        AgentLosses = 0
-        AgentTies = 0
-        i = 0
-        while i < 1:
+    def startGame(self):
+        humanName = str(self.ent1.get())
+        difficuty = self.var.get()
+        if humanName != '' and difficuty != 0:
             #Change agent based on what difficulty was selected
             if(difficuty == 3):
                 opponent = ModelAgent(brisChance = 0.1 , chance = 0.35, name = "Model")
@@ -31,54 +46,29 @@ def startGame():
                 opponent = SimpleAgent(brisChance = 0.1 , chance = 0.35, name = "Model")
             else:
                 opponent = randomAgent(brisChance = 0.1 , chance = 0.35, name = "Model")
-            
+                
             #Clear GUI
-            rad1.destroy()
-            rad2.destroy()
-            rad3.destroy()
-            text.destroy()
-            ent1.destroy()
-            btn.destroy()  
+            self.rad1.destroy()
+            self.rad2.destroy()
+            self.rad3.destroy()
+            self.text.destroy()
+            self.ent1.destroy()
+            self.btn.destroy()  
 
             players = [opponent, Human(name = humanName, brisChance = 0.1 , chance = 0.35)]
             briscola = ""
             deck = []
-            game = Game(briscola, deck, players,gameWindow,humanName)
-            winner = game.play(briscola, deck, players)
-            i += 1
-            if winner == "Model":
-                AgentWins += 1
-            if winner == humanName:
-                AgentLosses += 1
-            if winner == "tie":
-                AgentTies += 1
-        sys.stdout = sys.__stdout__
-        print("AI wins: " + str(AgentWins))
-        print("AI losses: " + str(AgentLosses))
-        print("Ties: " + str(AgentTies))
+            game = Game(briscola, deck, players,self.gameWindow,humanName)
+            game.play(briscola, deck, players)
+            btn2=Button(text='Back to start menu',command=lambda: Main.replay(self)).place(x = 800,y = 450)
 
-#Create game window
-gameWindow=Tk(screenName="Briscola",className="Briscola")
-gameWindow.geometry('1600x800')
 
-#Input player name
-text=Label(gameWindow, text = "Your name")
-ent1 = Entry(gameWindow)
 
-#Diffculty setting
-var = IntVar() 
-rad1 = Radiobutton(gameWindow, text='Easy', variable=var, value=1)
-rad2 = Radiobutton(gameWindow, text='Medium', variable=var, value=2)
-rad3 = Radiobutton(gameWindow, text='Hard', variable=var, value=3) 
-btn=Button(text='OK',command=startGame)
-rad1.pack()
-rad2.pack()
-rad3.pack()
-text.pack()
-ent1.pack()
-btn.pack()
 
-#Variable to hold what card the user wants to play (is reset to 0 after every round)
-click_var = IntVar()
+    def replay(self):
+        self.gameWindow.destroy()
+        Main.__init__(self)
 
-gameWindow.mainloop()   
+if __name__ == "__main__":
+    m = Main()
+    m.__init__()

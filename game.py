@@ -5,19 +5,6 @@ from tkinter.ttk import *
 #from GUI import _GUI
 
 
-def handle_click(event):
-    global click_var
-    if 760 > event.y > 590:
-        if 715 > event.x > 585:
-            click_var.set(1)
-            print(click_var)
-        elif 865 > event.x > 735:
-            click_var.set(2)
-            print(click_var)
-        elif 1015 > event.x > 885:
-            click_var.set(3)
-            print(click_var)
-
 class Game:
     '''
     A class for maintaining the state of a game of Briscola
@@ -29,7 +16,7 @@ class Game:
         Returns name of winner'''   
         self.gw = gameWindow #Inherit game window from main program
         self.cardsOnBoard = [] #List of cards on game board
-        self.gw.bind("<Button-1>", handle_click)
+        self.gw.bind("<Button-1>", Game.handle_click)
         i = 0
         for suite in Player.suites:
             for card in Player.cards:
@@ -87,13 +74,14 @@ class Game:
 
             self.elements = []
 
+            #Variable to hold what card the user wants to play (is reset to 0 after every round)
             global click_var
             click_var = IntVar()
 
             #Create the last card
             if(round < 18):
                 Game.create_card(self,self.canvas,1400,400,deck[39])
-            #Create the opponents  cards omn the board
+            #Create the opponents  cards on the board
             a = 0
             while a < len(players[self.AIPlayer].hand):
                 Game.create_card(self,self.canvas,650 + a*150,100,None)
@@ -101,7 +89,6 @@ class Game:
             #Create the players cards on board
             h = 0
             while h < len(players[self.humanPlayer].hand):
-                print(players[self.humanPlayer].hand[h])
                 Game.create_card(self,self.canvas,650 + h*150,675,players[self.humanPlayer].hand[h])
                 h += 1
             print(round)
@@ -121,7 +108,10 @@ class Game:
                     card1 = players[0].choose_card(click_var.get(),True,None)
                 else:
                      card1 = players[0].choose_card(self.briscola,True,None)
-                num = hand.index(card1) + 1 #card that the oponent plays from the boar
+                if round < 18:
+                    num = hand.index(card1) + 1 #card that the oponent plays from the board
+                else:
+                    num = hand.index(card1)
                 if players[0].name == "Model":
                     self.canvas.delete(self.cardsOnBoard[num])
                     Game.create_card(self,self.canvas,800,275,card1)
@@ -172,7 +162,10 @@ class Game:
                     card1 = players[1].choose_card(click_var.get(),True,None)
                 else:
                      card1 = players[1].choose_card(self.briscola,True,None)
-                num = hand.index(card1) + 1 #card that the oponent plays from the boar
+                if round < 18:
+                    num = hand.index(card1) + 1 #card that the oponent plays from the board
+                else:
+                    num = hand.index(card1)
                 if players[1].name == "Model":
                     self.canvas.delete(self.cardsOnBoard[num])
                     Game.create_card(self,self.canvas,800,275,card1)
@@ -227,7 +220,8 @@ class Game:
                 round += 1              
             else:
                 cont = False
-                return(Game.finish_game(players))
+                Game.finish_game(self,players)
+                return
 
 
     def winner(card1, card2, briscola):
@@ -246,23 +240,33 @@ class Game:
         else:
             return True
 
-    def finish_game(players):
+    def finish_game(self,players):
         '''Gets each player to count their cards and declares winner'''
         p1 = players[0].count_cards()
         p2 = players[1].count_cards()
+        self.canvas.delete('all')
+        for element in self.elements:
+            element.destroy()
 
         if p1 + p2 != 120:
             print("ERROR! Points don't equal 120")
             quit(1)
         if p1 > p2:
             print( players[0].name + " won by " + str(p1 - p2) + " points!")
-            return(players[0].name)
+            endText = Label(self.gw,text = players[0].name + " won by " + str(p1 - p2) + " points!", font = ('Arial', 13))
+            endText.place(x = 800, y = 400)
+            self.canvas.pack(fill = BOTH, expand = 1)
         elif p2 > p1:
             print(players[1].name + " won by " + str(p2 - p1) + " points!")
-            return(players[1].name)
+            endText = Label(self.gw,text = players[1].name + " won by " + str(p2 - p1) + " points!", font = ('Arial', 13))
+            endText.place(x = 800, y = 400)
+            self.canvas.pack(fill = BOTH, expand = 1)
         else:
             print("Tie!")
-            return("tie")
+            endText = Label(self.gw,text = "Tie!", font = ('Arial', 13))
+            endText.place(x = 800, y = 400)
+            self.canvas.pack(fill = BOTH, expand = 1)
+
         
     def create_card(self,canvas,x,y,card):
         '''Puts a card on the board at the given coodinates
@@ -277,3 +281,13 @@ class Game:
             self.elements.append(face)
             face.place(x = x-50, y = y-5)
         canvas.pack(fill = BOTH, expand = 1)
+
+    def handle_click(event):
+        global click_var
+        if 760 > event.y > 590:
+            if 715 > event.x > 585:
+                click_var.set(1)
+            elif 865 > event.x > 735:
+                click_var.set(2)
+            elif 1015 > event.x > 885:
+                click_var.set(3)
