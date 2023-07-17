@@ -3,7 +3,7 @@ from player import Player
 import random
 
 class LearningAgent(Player):        
-    '''An AI for briscola that plays cards based on the chance variable which is a dicitonary of types of cards
+    '''An AI for briscola that plays cards based on the chance variable which is a dictionary of types of cards
     (pointless,brispointless,Jack,Knight,king,3,1,brisJack,brisKnight,brisKing,bris3,bris1) of which each types
     value is a dicitonary of chances to play that card type at certain probabilites of it being beatan'''
 
@@ -14,6 +14,7 @@ class LearningAgent(Player):
         self.hand = []
         self.name = name
         self.wonCards = []
+        self.survivedGenertions = brisChance#Generatioans survivied in genetic algorithim
         self.cardChances = chance # chance to play each card type (pointless,brispointless,Jack,Knight,king,3,1,brisJack,brisKnight,brisKing,bris3,bris1)
 
 
@@ -40,6 +41,10 @@ class LearningAgent(Player):
 
         potentialHands=  self.createHands()
         card_list = []
+        if len(self.hand) == 1:
+            cardToPLay = self.hand[0]
+            self.hand.remove(cardToPLay)    
+            return(cardToPLay)
         #Gets chances of each card being beaten
         for card1 in self.hand:
             beaten = 0
@@ -67,24 +72,45 @@ class LearningAgent(Player):
                     types.append(c[0])
 
         #Get the chances to play each card
-        chancesToPLay = [self.cardChances[types[0]][card_list[0][1]],self.cardChances[types[1]][card_list[1][1]],
-                         self.cardChances[types[2]][card_list[2][1]]]
-        
-        sum = chancesToPLay[0] + chancesToPLay[1] + chancesToPLay[2]
-        chancesToPLay[0] = round((chancesToPLay[0] / sum),2)
-        chancesToPLay[1] = round((chancesToPLay[0] +   chancesToPLay[1] / sum),2)
-        chancesToPLay[2] = 1
+        if len(self.hand) == 3:
+            chancesToPLay = [self.cardChances[types[0]][card_list[0][1]],self.cardChances[types[1]][card_list[1][1]],
+                            self.cardChances[types[2]][card_list[2][1]]]
+            
+            sum = chancesToPLay[0] + chancesToPLay[1] + chancesToPLay[2]
+            if sum == 0:
+                chancesToPLay[0] = 0.33
+                chancesToPLay[1] = 0.66
+                chancesToPLay[2] = 1 
+            else:
+                chancesToPLay[0] = round((chancesToPLay[0] / sum),2)
+                chancesToPLay[1] = round((chancesToPLay[0] +   chancesToPLay[1] / sum),2)
+                chancesToPLay[2] = 1
 
-        randomChance = round(random.uniform(0.01, 0.99),2)
-        if(chancesToPLay[0] > randomChance):
-            cardToPLay = self.hand[0]
-        elif(chancesToPLay[1] > randomChance):
-            cardToPLay = self.hand[1]
-        else:
-            cardToPLay = self.hand[2]
+            randomChance = round(random.uniform(0.01, 0.99),2)
+            if(chancesToPLay[0] > randomChance):
+                cardToPLay = self.hand[0]
+            elif(chancesToPLay[1] > randomChance):
+                cardToPLay = self.hand[1]
+            else:
+                cardToPLay = self.hand[2]   
+        else:                                                
+            chancesToPLay = [self.cardChances[types[0]][card_list[0][1]],self.cardChances[types[1]][card_list[1][1]]]  
 
+            sum = chancesToPLay[0] + chancesToPLay[1]
+            if sum == 0:
+                chancesToPLay[0] = 0.5
+                chancesToPLay[1] = 1.0
+            else:
+                chancesToPLay[0] = round((chancesToPLay[0] / sum),2)
+                chancesToPLay[1] = 1
+
+            randomChance = round(random.uniform(0.01, 0.99),2)
+            if(chancesToPLay[0] > randomChance):
+                cardToPLay = self.hand[0]
+            else:
+                cardToPLay = self.hand[1] 
         self.hand.remove(cardToPLay)    
-        return(chancesToPLay)
+        return(cardToPLay)
 
     def deal_hand(self, hand):
         ''' 
@@ -123,7 +149,7 @@ class LearningAgent(Player):
             self.PotentialCards.remove(card1)
 
     def count_cards(self):
-        '''returns total points of won cards'''
+        '''returns total points of won cards reset variables'''
         points = 0
         for card in self.wonCards:
             if card[0] == '3':
@@ -136,6 +162,14 @@ class LearningAgent(Player):
                  points += 3
             elif card[0] == "King":
                  points += 4
+        
+        self.hand = []
+        self.wonCards = []
+        #List of cards still to play
+        self.PotentialCards = []
+        for suite in Player.suites:
+            for card in Player.cards:
+                self.PotentialCards.append((str(card), suite))
         return(points)
 
     def game_outcome(self, player_win, points):

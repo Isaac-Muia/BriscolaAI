@@ -67,6 +67,6 @@ class Test_agents(unittest.TestCase):
         testAgent = LearningAgent(name = "Model", brisChance=0.2,chance=chances)
         testAgent.hand = [("4","Swords"),("4","Suns"),("Jack","Clubs")]
         self.assertEqual(testAgent.choose_card("Suns",True,None),[0.33,0.66,1])
-
+        print(testAgent.cardChances["brisJack"])
 if __name__ == '__main__':
     unittest.main()
