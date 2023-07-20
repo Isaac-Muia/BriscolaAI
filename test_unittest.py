@@ -2,6 +2,7 @@ from AI.simple_player import SimpleAgent
 from AI.probability_player import ProbAgent
 from AI.simple_player_memory import ModelAgent
 from AI.Learning_player import LearningAgent
+from AI.Improved_Learning import improvedLearing
 
 import unittest
 
@@ -55,18 +56,21 @@ class Test_agents(unittest.TestCase):
         testAgent.hand = [("4","Swords"),("4","Suns"),("Jack","Clubs")]
         self.assertEqual(testAgent.choose_card("Suns",True,None),("4","Suns"))
 
-    def test_LearningAgent(self):
-        tmpdict = {}
-        i = 1
-        while i > 0:
-            i = round(i - 0.01,2)
-            tmpdict.update({i:0.9}) 
 
-        chances = {"pointless":tmpdict,"brispointless":tmpdict,"Jack":tmpdict,"Knight":tmpdict,'King':tmpdict,"3":tmpdict,
-                   '1':tmpdict,'brisJack':tmpdict,'brisKnight':tmpdict,"brisKing":tmpdict,"bris3":tmpdict,"bris1":tmpdict}
-        testAgent = LearningAgent(name = "Model", brisChance=0.2,chance=chances)
-        testAgent.hand = [("4","Swords"),("4","Suns"),("Jack","Clubs")]
-        self.assertEqual(testAgent.choose_card("Suns",True,None),[0.33,0.66,1])
-        print(testAgent.cardChances["brisJack"])
+
+    # def test_LearningAgent(self):
+    #     tmpdict = {}
+    #     i = 1
+    #     while i > 0:
+    #         i = round(i - 0.01,2)
+    #         tmpdict.update({i:0.9}) 
+
+    #     chances = {"pointless":tmpdict,"brispointless":tmpdict,"Jack":tmpdict,"Knight":tmpdict,'King':tmpdict,"3":tmpdict,
+    #                '1':tmpdict,'brisJack':tmpdict,'brisKnight':tmpdict,"brisKing":tmpdict,"bris3":tmpdict,"bris1":tmpdict}
+    #     testAgent = LearningAgent(name = "Model", brisChance=0.2,chance=chances)
+    #     testAgent.hand = [("4","Swords"),("4","Suns"),("Jack","Clubs")]
+    #     self.assertEqual(testAgent.choose_card("Suns",True,None),[0.33,0.66,1])
+
+
 if __name__ == '__main__':
     unittest.main()

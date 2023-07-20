@@ -14,9 +14,9 @@ class LearningAgent(Player):
         self.hand = []
         self.name = name
         self.wonCards = []
-        self.survivedGenertions = brisChance#Generatioans survivied in genetic algorithim
-        self.cardChances = chance # chance to play each card type (pointless,brispointless,Jack,Knight,king,3,1,brisJack,brisKnight,brisKing,bris3,bris1)
-
+        self.survivedGenertions = 0 #Generatioans survivied in genetic algorithim
+        self.cardChances = chance # chance to play each card type when playing first (pointless,brispointless,Jack,Knight,king,3,1,brisJack,brisKnight,brisKing,bris3,bris1)
+        self.secondCardChances = brisChance # chance to play each card  when playing second keys are every card in the game with the values being a dictionary of every card and a chance to play that card
 
         #List of cards still to play
         self.PotentialCards = []
@@ -39,76 +39,116 @@ class LearningAgent(Player):
         Chooses card to play based on chance of playing it with current likleyhoods
         '''
 
-        potentialHands=  self.createHands()
+        potentialHands = self.createHands()
         card_list = []
         if len(self.hand) == 1:
             cardToPLay = self.hand[0]
             self.hand.remove(cardToPLay)    
             return(cardToPLay)
-        #Gets chances of each card being beaten
-        for card1 in self.hand:
-            beaten = 0
-            for hand in potentialHands:
-                for card in hand:
-                    if self.winner(card1, card, briscola) == False:
-                        beaten += 1
-                        break
-      
-            beaten = beaten / len(potentialHands)
-            card_list.append((card1,round(beaten,2)))
+        if first:
+            #Gets chances of each card being beaten
+            for card1 in self.hand:
+                beaten = 0
+                for hand in potentialHands:
+                    for card in hand:
+                        if self.winner(card1, card, briscola) == False:
+                            beaten += 1
+                            break
+        
+                beaten = beaten / len(potentialHands)
+                card_list.append((card1,round(beaten,2)))
 
-        #Get the type of each card in hand
-        types = []
-        for c in self.hand:
-            if c[0] == "2" or  c[0] == "4" or c[0] == "5" or c[0] == "6" or c[0] == "7":
-                if c[1] == briscola:
-                    types.append("brispointless")
+            #Get the type of each card in hand
+            types = []
+            for c in self.hand:
+                if c[0] == "2" or  c[0] == "4" or c[0] == "5" or c[0] == "6" or c[0] == "7":
+                    if c[1] == briscola:
+                        types.append("brispointless")
+                    else:
+                        types.append("pointless")
                 else:
-                    types.append("pointless")
-            else:
-                if c[1] == briscola:
-                    types.append("bris" + c[0])
+                    if c[1] == briscola:
+                        types.append("bris" + c[0])
+                    else:
+                        types.append(c[0])
+
+            #Get the chances to play each card
+            if len(self.hand) == 3:
+                chancesToPLay = [self.cardChances[types[0]][card_list[0][1]],self.cardChances[types[1]][card_list[1][1]],
+                                self.cardChances[types[2]][card_list[2][1]]]
+                
+                sum = chancesToPLay[0] + chancesToPLay[1] + chancesToPLay[2]
+                if sum == 0:
+                    chancesToPLay[0] = 0.33
+                    chancesToPLay[1] = 0.66
+                    chancesToPLay[2] = 1 
                 else:
-                    types.append(c[0])
+                    chancesToPLay[0] = round((chancesToPLay[0] / sum),2)
+                    chancesToPLay[1] = round((chancesToPLay[0] +   chancesToPLay[1] / sum),2)
+                    chancesToPLay[2] = 1
 
-        #Get the chances to play each card
-        if len(self.hand) == 3:
-            chancesToPLay = [self.cardChances[types[0]][card_list[0][1]],self.cardChances[types[1]][card_list[1][1]],
-                            self.cardChances[types[2]][card_list[2][1]]]
-            
-            sum = chancesToPLay[0] + chancesToPLay[1] + chancesToPLay[2]
-            if sum == 0:
-                chancesToPLay[0] = 0.33
-                chancesToPLay[1] = 0.66
-                chancesToPLay[2] = 1 
-            else:
-                chancesToPLay[0] = round((chancesToPLay[0] / sum),2)
-                chancesToPLay[1] = round((chancesToPLay[0] +   chancesToPLay[1] / sum),2)
-                chancesToPLay[2] = 1
+                randomChance = round(random.uniform(0.01, 0.99),2)
+                if(chancesToPLay[0] > randomChance):
+                    cardToPLay = self.hand[0]
+                elif(chancesToPLay[1] > randomChance):
+                    cardToPLay = self.hand[1]
+                else:
+                    cardToPLay = self.hand[2]   
+            else:                                                
+                chancesToPLay = [self.cardChances[types[0]][card_list[0][1]],self.cardChances[types[1]][card_list[1][1]]]  
 
-            randomChance = round(random.uniform(0.01, 0.99),2)
-            if(chancesToPLay[0] > randomChance):
-                cardToPLay = self.hand[0]
-            elif(chancesToPLay[1] > randomChance):
-                cardToPLay = self.hand[1]
-            else:
-                cardToPLay = self.hand[2]   
-        else:                                                
-            chancesToPLay = [self.cardChances[types[0]][card_list[0][1]],self.cardChances[types[1]][card_list[1][1]]]  
+                sum = chancesToPLay[0] + chancesToPLay[1]
+                if sum == 0:
+                    chancesToPLay[0] = 0.5
+                    chancesToPLay[1] = 1.0
+                else:
+                    chancesToPLay[0] = round((chancesToPLay[0] / sum),2)
+                    chancesToPLay[1] = 1
 
-            sum = chancesToPLay[0] + chancesToPLay[1]
-            if sum == 0:
-                chancesToPLay[0] = 0.5
-                chancesToPLay[1] = 1.0
-            else:
-                chancesToPLay[0] = round((chancesToPLay[0] / sum),2)
-                chancesToPLay[1] = 1
+                randomChance = round(random.uniform(0.01, 0.99),2)
+                if(chancesToPLay[0] > randomChance):
+                    cardToPLay = self.hand[0]
+                else:
+                    cardToPLay = self.hand[1] 
+        #Agent goes second
+        else:
+            #Get the chances to play each card
+            if len(self.hand) == 3:
+                chancesToPLay = [self.secondCardChances[first_card][self.hand[0]],self.secondCardChances[first_card][self.hand[1]],
+                                self.secondCardChances[first_card][self.hand[2]]]
+                sum = chancesToPLay[0] + chancesToPLay[1] + chancesToPLay[2]
+                if sum == 0:
+                    chancesToPLay[0] = 0.33
+                    chancesToPLay[1] = 0.66
+                    chancesToPLay[2] = 1 
+                else:
+                    chancesToPLay[0] = round((chancesToPLay[0] / sum),2)
+                    chancesToPLay[1] = round((chancesToPLay[0] +   chancesToPLay[1] / sum),2)
+                    chancesToPLay[2] = 1
 
-            randomChance = round(random.uniform(0.01, 0.99),2)
-            if(chancesToPLay[0] > randomChance):
-                cardToPLay = self.hand[0]
-            else:
-                cardToPLay = self.hand[1] 
+                randomChance = round(random.uniform(0.01, 0.99),2)
+                if(chancesToPLay[0] > randomChance):
+                    cardToPLay = self.hand[0]
+                elif(chancesToPLay[1] > randomChance):
+                    cardToPLay = self.hand[1]
+                else:
+                    cardToPLay = self.hand[2]   
+            else:                                                
+                chancesToPLay = [self.secondCardChances[first_card][self.hand[0]],self.secondCardChances[first_card][self.hand[1]]]  
+
+                sum = chancesToPLay[0] + chancesToPLay[1]
+                if sum == 0:
+                    chancesToPLay[0] = 0.5
+                    chancesToPLay[1] = 1.0
+                else:
+                    chancesToPLay[0] = round((chancesToPLay[0] / sum),2)
+                    chancesToPLay[1] = 1
+
+                randomChance = round(random.uniform(0.01, 0.99),2)
+                if(chancesToPLay[0] > randomChance):
+                    cardToPLay = self.hand[0]
+                else:
+                    cardToPLay = self.hand[1] 
         self.hand.remove(cardToPLay)    
         return(cardToPLay)
 
@@ -149,7 +189,7 @@ class LearningAgent(Player):
             self.PotentialCards.remove(card1)
 
     def count_cards(self):
-        '''returns total points of won cards reset variables'''
+        '''returns total points of won cards resets class variables if game is over and hand is empty'''
         points = 0
         for card in self.wonCards:
             if card[0] == '3':
@@ -162,14 +202,14 @@ class LearningAgent(Player):
                  points += 3
             elif card[0] == "King":
                  points += 4
-        
-        self.hand = []
-        self.wonCards = []
-        #List of cards still to play
-        self.PotentialCards = []
-        for suite in Player.suites:
-            for card in Player.cards:
-                self.PotentialCards.append((str(card), suite))
+        if len(self.hand) == 0:
+            self.hand = []
+            self.wonCards = []
+            #List of cards still to play
+            self.PotentialCards = []
+            for suite in Player.suites:
+                for card in Player.cards:
+                    self.PotentialCards.append((str(card), suite))
         return(points)
 
     def game_outcome(self, player_win, points):
