@@ -114,8 +114,8 @@ class LearningAgent(Player):
         else:
             #Get the chances to play each card
             if len(self.hand) == 3:
-                chancesToPLay = [self.secondCardChances[first_card][self.hand[0]],self.secondCardChances[first_card][self.hand[1]],
-                                self.secondCardChances[first_card][self.hand[2]]]
+                chancesToPLay = [self.secondCardChances[briscola][first_card][self.hand[0]],self.secondCardChances[briscola][first_card][self.hand[1]],
+                                self.secondCardChances[briscola][first_card][self.hand[2]]]
                 sum = chancesToPLay[0] + chancesToPLay[1] + chancesToPLay[2]
                 if sum == 0:
                     chancesToPLay[0] = 0.33
@@ -134,7 +134,7 @@ class LearningAgent(Player):
                 else:
                     cardToPLay = self.hand[2]   
             else:                                                
-                chancesToPLay = [self.secondCardChances[first_card][self.hand[0]],self.secondCardChances[first_card][self.hand[1]]]  
+                chancesToPLay =  [self.secondCardChances[briscola][first_card][self.hand[0]],self.secondCardChances[briscola][first_card][self.hand[1]]] 
 
                 sum = chancesToPLay[0] + chancesToPLay[1]
                 if sum == 0:
