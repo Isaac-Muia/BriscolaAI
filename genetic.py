@@ -16,12 +16,12 @@ def modifyNumber(num):
     elif num < 0.0:
         num = 0.0
     return(num)
-
+longestSurvivor = [0,0,0,0]
 sys.stdout = open(os.devnull, 'w')
 Agents = []
 agentNumber = 1 #Number of agents created
 genNumber = 1 #Number of generations
-while genNumber <= 3: #Number of genertions algorithm will run for
+while genNumber <= 2600: #Number of genertions algorithm will run for
     #create agents
     while len(Agents) < 10:
         dicts = []#chances of playing cards when playing second
@@ -88,7 +88,7 @@ while genNumber <= 3: #Number of genertions algorithm will run for
       #  y = x + 1
       #  while y < 10:
             games = 0
-            while games < 20:
+            while games < 30:
                 briscola = ""
                 deck = []
                 players = [Agents[x],ModelAgent(name="Model",brisChance=0.1,chance=0.35)]
@@ -131,11 +131,17 @@ while genNumber <= 3: #Number of genertions algorithm will run for
 
     for a in Agents:
         a.survivedGenertions += 1
+        if a.survivedGenertions > longestSurvivor[3]:
+            longestSurvivor[0] = a.name
+            longestSurvivor[1] = a.cardChances
+            longestSurvivor[2] = a.secondCardChances
+            longestSurvivor[3] = a.survivedGenertions
     genNumber += 1
 
 sys.stdout = sys.__stdout__
 print("Top agents were " + Agents[0].name + " surviving " + str(Agents[0].survivedGenertions) + " generations, " + 
       Agents[1].name + " surviving " + str(Agents[1].survivedGenertions) + " generations and " + Agents[2].name + " surviving " + str(Agents[2].survivedGenertions) + " generations")
+print('Longest survivor was ' + longestSurvivor[0] + " surviving " + str(longestSurvivor[3]) + " generations")
 #print(Agents[0].cardChances)
 #print(Agents[0].secondCardChances)
 #print()
@@ -148,6 +154,7 @@ file1 = open(Agents[0].name +".txt", "w")
 file1.write(str(Agents[0].cardChances) + '\n\n' + str(Agents[0].secondCardChances))
 file2 = open(Agents[1].name +".txt", "w")
 file2.write(str(Agents[1].cardChances) + '\n\n' + str(Agents[1].secondCardChances))
-file2 = open(Agents[2].name +".txt", "w")
-file2.write(str(Agents[2].cardChances) + '\n\n' + str(Agents[2].secondCardChances))
-
+file3 = open(Agents[2].name +".txt", "w")
+file3.write(str(Agents[2].cardChances) + '\n\n' + str(Agents[2].secondCardChances))
+file4 = open(longestSurvivor[0] +".txt", "w")
+file4.write(str(longestSurvivor[1]) + '\n\n' + str(longestSurvivor[2]))
